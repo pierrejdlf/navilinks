@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+
+    <script type="text/javascript" src="lib/jquery.js"></script>
+    <script type="text/javascript" src="lib/handlebars-v2.0.0.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+  </head>
+  
+  <body>
+
+  <iframe
+    id="iframe"
+    src=""
+    sandbox="allow-same-origin"
+    onload='frameloaded();'>
+  </iframe>
+
+  <div id="control">
+    <input id="input" type="text" value="" placeholder="type your url here..." >
+    <input id="toggleframe" type="checkbox" checked="true"/> Toggle iframe
+    <div id="status">
+      currently looking at <span id="url">start</span>
+    </div>
+  </div>
+
+  <div id="links"></div>
+  
+  <script id="link-template" type="text/x-handlebars-template">
+    <div class="link">
+      {{domain}}
+      {{url}}
+      {{name}}
+    </div>
+  </script>
+
+  <script type="text/javascript" src="navilinks.js"></script>
+
+  </body>
+
+</html>
