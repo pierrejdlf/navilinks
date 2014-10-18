@@ -5,6 +5,9 @@
 
     <script type="text/javascript" src="lib/jquery.js"></script>
     <script type="text/javascript" src="lib/handlebars-v2.0.0.js"></script>
+    <script type="text/javascript" src="lib/underscore-min.js"></script>
+
+    <script type="text/javascript" src="navilinks.js"></script>
 
     <link rel="stylesheet" type="text/css" href="css/style.css">
   </head>
@@ -14,30 +17,34 @@
   <iframe
     id="iframe"
     src=""
-    sandbox="allow-same-origin"
+    sandbox="allow-same-origin allow-scripts allow-popups"
     onload='frameloaded();'>
   </iframe>
 
   <div id="control">
     <input id="input" type="text" value="" placeholder="type your url here..." >
-    <input id="toggleframe" type="checkbox" checked="true"/> Toggle iframe
+    <input id="toggleframe" type="checkbox"/> Toggle iframe
+    <input id="togglelist" type="checkbox"/> Toggle list
     <div id="status">
       currently looking at <span id="url">start</span>
     </div>
+    <div id="simplelist"><ul></ul></div>
   </div>
 
-  <div id="links"></div>
+  <div id="links">
+  </div>
   
-  <script id="link-template" type="text/x-handlebars-template">
-    <div class="link">
-      {{domain}}
-      {{url}}
+  <script id="linkcloud-template" type="text/x-handlebars-template">
+    <div class="link" title="{{url}}">
+      {{domain}}<br>
       {{name}}
     </div>
   </script>
-
-  <script type="text/javascript" src="navilinks.js"></script>
-
+  
+  <script id="linklist-template" type="text/x-handlebars-template">
+    {{domain}} | <span class="listspan" onClick="clicklink('{{url}}');">{{url}}</span> | {{name}}
+  </script>
+  
   </body>
 
 </html>
