@@ -34,7 +34,7 @@ html, body {
   cursor: pointer;
 }
 .listspan:hover {
-  color:black;
+  color:rgb(119, 119, 119);
 }
 #status {
   margin-top:5px;
@@ -90,6 +90,13 @@ html, body {
 }
 .link:hover {
   color:lightgray;
+}
+
+.internal {
+  color:rgb(125, 177, 245);
+}
+.external {
+  color:white;
 }
 
 iframe {

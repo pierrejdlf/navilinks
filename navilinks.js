@@ -18,35 +18,56 @@ var PARAMS = getSearchParameters();
 ////////////////////////////////////////////////////////
 
 
+
 var W,H;
 var PROXYURL = "proxy/miniProxy.php/";
 var UIBLOCKED = false;
-var BLACKLIST = false;
+var currentDomain = null;
+
+// blacklist
+var HIDESAMEDOMAIN = PARAMS['h'];
+var BLACKLIST = true;
 var BLACKLISTED = [
+  ///////////////// bad companies
   "youtube\.com",
   "google\.com",
   "apple\.com",
   "facebook\.com",
   "twitter\.com",
-  "amazon\.com",
-  "yahoo\.com",
+  "eventbrite\.com",
+  //"amazon\.com",
+  //"yahoo\.com",
+  //"tumblr\.com",
+  //"reddit\.com",
   "linkedin\.com",
   "vimeo\.com",
-  "github\.com"
+  "tumblr\.com$", // if ends with tumblr.com
+  ///////////////// bad types
+  "^#",
+  "^(javascript|skype|mailto):",
+  ".*\.(jpeg|jpg|gif|png|tiff|mp4|mov|txt|rtf|pdf|xml)$",
+  ///////////////// not working within iframes
+  "github\.com",
+  "flickr\.com"
 ];
+
+
 
 
 ////////////////////////////////////////////////////////
 // extract domain from url
 function getdomain(url) {
-  var doms = url.replace(/^https*:\/\//,"").toLowerCase().split("/");
-  if(doms && doms.length>0) {
-    var spl = doms[0].split(".");
-    var ext = spl.pop();
-    var dom = spl.pop();
-    return dom+"."+ext;
+  if(url) {
+    var doms = url.replace(/^https*:\/\//,"").toLowerCase().split("/");
+    if(doms && doms.length>0) {
+      var spl = doms[0].split(".");
+      var ext = spl.pop();
+      var dom = spl.pop();
+      return dom+"."+ext;
+    } else
+      return "no-domain-!!";
   } else
-    return "no-domain-?";
+    return "empty-url-!!";
 };
 
 ////////////////////////////////////////////////////////
@@ -61,26 +82,39 @@ function isgoodlink(link) {
     if(blcklisted)
       console.log("Blacklisted:",link);
   }
+  if(currentDomain && HIDESAMEDOMAIN && getdomain(link)==currentDomain)
+    blcklisted = true;
   return link && link.length>3 && /\./g.test(link) && !blcklisted;
 };
 
 ////////////////////////////////////////////////////////
 // get all the links from iframe
 function getiframelinks() {
-  var links = [];
+  var links = {};
   $("#iframe").contents().find('a').each( function(i,d) {
     var srgx = new RegExp("^.*"+PROXYURL,'i');
     var url = $(d).attr('href');
-    if(url) url = url.replace(srgx,"");
-    if(isgoodlink(url))
-      links.push({
+    if(url) url = url
+      .replace(srgx,"")
+      .replace(/^\/\//,"")      // starting "//""
+      .replace(/#[\w\-]*$/,"");   // trailing hashes
+    if(isgoodlink(url)) {
+      // last link will override any previous one with same href
+      links[url] = {
         url: url,
         proxy: PROXYURL+url,
         domain: getdomain(url),
-        name: $(d).text().slice(0,30)
-      });
+        name: $(d).text().slice(0,30),
+        class: currentDomain==getdomain(url) ? "internal" : "external"
+      };
+    }
   });
-  return links;
+  var linkslist = [];
+  _.each(links, function(l) {
+    linkslist.push(l);
+  })
+  linkslist = _.sortBy(linkslist,function(d){return d.class;});
+  return linkslist;
 };
 
 ////////////////////////////////////////////////////////
@@ -89,6 +123,7 @@ function navigateto(nexturl) {
   if(!UIBLOCKED) {
     UIBLOCKED = true;
     console.log("Navigating to nexturl:",nexturl)
+    currentDomain = getdomain(nexturl);
     var proxyurl = PROXYURL+nexturl;
     $("#status #url").text(nexturl);
     $("#iframe").attr("src",proxyurl);
@@ -161,7 +196,7 @@ function frameloaded() {
     
     // add in simple list
     var listelem = Handlebars.compile( $("#linklist-template").html() )(l);
-    $('#simplelist ul').append($("<li>").html(listelem));
+    $('#simplelist ul').append(listelem);
 
   });
 

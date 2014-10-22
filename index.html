@@ -35,14 +35,14 @@
   </div>
   
   <script id="linkcloud-template" type="text/x-handlebars-template">
-    <div class="link" title="{{url}}">
+    <div class="link {{class}}" title="{{url}}">
       {{domain}}<br>
       {{name}}
     </div>
   </script>
   
   <script id="linklist-template" type="text/x-handlebars-template">
-    {{domain}} | <span class="listspan" onClick="clicklink('{{url}}');">{{url}}</span> | {{name}}
+    <li class="{{class}}">{{domain}} | <span class="listspan" onClick="clicklink('{{url}}');">{{url}}</span> | {{name}}</li>
   </script>
   
   </body>
